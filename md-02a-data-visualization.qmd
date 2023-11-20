@@ -1,6 +1,6 @@
 ---
 title: "Data Visualisation"
-author: ""
+author: "Justine Haag"
 format:
   html:
     embed-resources: true
@@ -46,10 +46,10 @@ library(rnaturalearth)
 7.  Render the document and fix any errors.
 
 ```{r}
-#| eval: false
+#| eval: true
  
-gapminder_2007 <- ___ |> 
-  ___(year == 2007) 
+gapminder_2007 <- gapminder |> 
+  filter(year == 2007) 
 ```
 
 ## Task 3: Summarize data for life expectancy by continent
@@ -73,13 +73,13 @@ gapminder_2007 <- ___ |>
 8.  Render the document and fix any errors.
 
 ```{r}
-#| eval: false
+#| eval: true
 
-gapminder_summary_2007 <- ___ |> 
-  group_by(___) |> 
+gapminder_summary_2007 <- gapminder_2007 |> 
+  group_by(continent) |> 
   summarise(
     count = n(),
-    lifeExp = median(___)
+    lifeExp = median(lifeExp)
   )
 ```
 
@@ -104,11 +104,11 @@ gapminder_summary_2007 <- ___ |>
 8.  Render the document and fix any errors.
 
 ```{r}
-#| eval: false
+#| eval: true
 
-gapminder_summary_continent_year <- gapminder ___ 
-  group_by(continent, ___) |> 
-  ___(lifeExp = median(lifeExp)) 
+gapminder_summary_continent_year <- gapminder |> 
+  group_by(continent, year) |> 
+  summarise(lifeExp = median(lifeExp)) 
 
 ```
 
@@ -127,6 +127,7 @@ gapminder_summary_2007 <- read_rds(here::here("data/gapminder-summary-2007.rds")
 
 gapminder_summary_continent_year <- read_rds(here::here("data/gapminder-summary-continent-year.rds"))
 
+
 ```
 
 ## Task 6: Create a boxplot
@@ -143,7 +144,21 @@ gapminder_summary_continent_year <- read_rds(here::here("data/gapminder-summary-
 
 4.  Run the code contained in the code chunk and fix any errors.
 
-5.  What are the data types of the three variables used for aesthetic mappings?
+```{r}
+
+ggplot(data = gapminder_2007,
+       mapping = aes(x = continent,
+                     y = lifeExp,
+                     fill = continent)) +
+  geom_boxplot(outlier.shape = NA) 
+
+# code to bot display outliers from https://stackoverflow.com/questions/43499229/removing-outliers-from-boxplot-and-plotly
+
+```
+
+3.  What are the data types of the three variables used for aesthetic mappings?
+
+    Continent is categorical (x), life expectancy is numerical (y), the filling colors are also categorical (?) althoughI would say colors are in the RAL sytem :D
 
 ## Task 7: Create a timeseries plot
 
@@ -156,6 +171,15 @@ gapminder_summary_continent_year <- read_rds(here::here("data/gapminder-summary-
 -   continent to color using the `color = continent` argument inside `aes()`
 
 3.  Run the code contained in the code chunk and fix any errors.
+
+```{r}
+ggplot(data = gapminder_summary_continent_year, 
+       mapping = aes(x = year,
+                     y = lifeExp,
+                     color = continent ))+
+  geom_line()+
+  geom_point()
+```
 
 ## Task 8: Create a barplot
 
@@ -170,6 +194,14 @@ gapminder_summary_continent_year <- read_rds(here::here("data/gapminder-summary-
 
 3.  Run the code contained in the code chunk and fix any errors.
 
+```{r}
+ggplot(data = gapminder_summary_2007,
+       mapping = aes (x = continent,
+                      y = count)) +
+  geom_col()
+
+```
+
 ### with `geom_bar()`
 
 1.  Add a new code chunk below.
@@ -177,6 +209,13 @@ gapminder_summary_continent_year <- read_rds(here::here("data/gapminder-summary-
 2.  Use the `ggplot()` function and the `gapminder_2007` object to create a barplot using the `geom_bar()` function with the following aesthetic mappings:
 
 -   continent to the x-axis;
+
+```{r}
+ggplot(data = gapminder_2007,
+       mapping = aes(x = continent))+
+  geom_bar()
+
+```
 
 3.  Run the code contained in the code chunk and fix any errors.
 
@@ -198,11 +237,24 @@ gapminder_summary_continent_year <- read_rds(here::here("data/gapminder-summary-
 -   `col = "grey30"`
 -   `breaks = seq(40, 85, 2.5)`
 
+```{r}
+ggplot(data = gapminder_2007,
+       mapping = aes(x = lifeExp,
+                     fill = continent))+
+  geom_histogram(col = 'grey30',
+                 breaks = seq(40, 85, 2.5))
+
+```
+
 5.  Run the code contained in the code chunk and fix any errors.
 
 6.  Describe how the `geom_histogram()` function is similar to the `geom_bar()` function.
 
+    A histogram is a special kind of bar plot, in which occurences are counted. In the case of the histogram, there is a counting of occurences of countries from each continent for which the life expectancy is between a value and this value plus 2 and a half years.
+
 7.  What happens by adding the 'breaks' argument? Play around with the numbers inside of `seq()` to see what changes. Describe here what you observe:
+
+    You can change the time interval for each life expectancy class with the last break value. The two first values indicate where to start and where to stop (here 40 years for the minimum life expectancy and 85 for the maximum life expectancy recorded)
 
 ## Task 10: Scatterplot and faceting
 
@@ -214,6 +266,17 @@ gapminder_summary_continent_year <- read_rds(here::here("data/gapminder-summary-
 -   lifeExp to the y-axis;
 -   population to the size argument;
 -   country to color using the `color = continent` argument inside `aes()`
+
+```{r}
+ggplot(data = gapminder_2007,
+       mapping = aes(x = gdpPercap,
+                     y = lifeExp,
+                     size = pop,
+                     color = continent)) +
+  geom_point() + 
+  facet_wrap(~continent)
+
+```
 
 4.  Run the code contained in the code chunk and fix any errors.
 
@@ -231,12 +294,12 @@ gapminder_summary_continent_year <- read_rds(here::here("data/gapminder-summary-
 
 4.  What is stored in the `country_colors` object? Find out by executing the object in the Console (type it to the Console and hit enter). Do the same again, but with a question mark `?country_colors`.
 
-5.  Next to the code chunk option `#| eval:` change the value from `false` to `true`.
+    Next to the code chunk option `#| eval:` change the value from `false` to `true`.
 
-6.  Render the document and fix any errors.
+5.  Render the document and fix any errors.
 
 ```{r}
-#| eval: false
+#| eval: true
 
 ggplot(data = gapminder,
        mapping = aes(x = year, 
@@ -245,7 +308,7 @@ ggplot(data = gapminder,
                      color = country)) +
   geom_line(lwd = 1, show.legend = FALSE) + 
   facet_wrap(~continent) +
-  # scale_color_manual(values = country_colors) +
+  scale_color_manual(values = country_colors) +
   theme_minimal() 
 
 ```
@@ -263,7 +326,7 @@ The code chunk below contains code for a world map that shows countries by incom
 3.  Render the document and fix any errors.
 
 ```{r}
-#| eval: false
+#| eval: true
 
 world <- ne_countries(scale = "small", returnclass = "sf")
 

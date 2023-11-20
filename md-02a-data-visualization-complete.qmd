@@ -210,6 +210,8 @@ ggplot(data = gapminder_summary_2007,
 
 4.  The plot is identical to the plot created with `geom_col()`. Why? What does the `geom_bar()` function do? Write your text here:
 
+    a barplot represents the number of occurences for each defined category, which is the same as (or the definition of) counting the occurences of each category in a column plot
+
 ```{r}
 ggplot(data = gapminder_2007,
        mapping = aes(x = continent)) +
